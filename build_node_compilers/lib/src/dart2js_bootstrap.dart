@@ -74,6 +74,7 @@ https://github.com/dart-lang/build/blob/master/docs/faq.md#how-can-i-resolve-ski
     return env?.split(' ') ?? <String>[];
   }();
 
+  log.info('Running `dart compile js` with ${args.join(' ')}\n');
   // final dart2js = await buildStep.fetchResource(dart2JsWorkerResource);
   // final result = await dart2js.compile(args);
   final result = await Process.run(
