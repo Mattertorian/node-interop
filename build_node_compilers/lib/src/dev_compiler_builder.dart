@@ -42,13 +42,13 @@ class DevCompilerBuilder implements Builder {
   /// If not provided, defaults to "lib/libraries.json" in the sdk directory.
   final String librariesPath;
 
-  DevCompilerBuilder(
-      {bool useIncrementalCompiler = true,
-      required this.platform,
-      this.sdkKernelPath,
-      String? librariesPath,
-      String? platformSdk})
-      : useIncrementalCompiler = useIncrementalCompiler,
+  DevCompilerBuilder({
+    bool useIncrementalCompiler = true,
+    required this.platform,
+    this.sdkKernelPath,
+    String? librariesPath,
+    String? platformSdk,
+  })  : useIncrementalCompiler = useIncrementalCompiler,
         platformSdk = platformSdk ?? sdkDir,
         librariesPath = librariesPath ??
             p.join(platformSdk ?? sdkDir, 'lib', 'libraries.json'),

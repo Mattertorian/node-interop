@@ -55,7 +55,9 @@ class NodeEntrypointBuilder implements Builder {
     validateOptions(
         options.config, _supportedOptions, 'build_node_compilers|entrypoint',
         deprecatedOptions: _deprecatedOptions);
-    var compilerOption = options.config[_compiler] as String ?? 'dartdevc';
+    var compilerOption = options.config[_compiler] != null
+        ? options.config[_compiler] as String
+        : 'dartdevc';
     WebCompiler compiler;
     switch (compilerOption) {
       case 'dartdevc':
@@ -74,8 +76,7 @@ class NodeEntrypointBuilder implements Builder {
           'Expected a list for $_dart2jsArgs.');
     }
     var dart2JsArgs =
-        (options.config[_dart2jsArgs] as List).map((arg) => '$arg').toList() ??
-            const <String>[];
+        (options.config[_dart2jsArgs] as List).map((arg) => '$arg').toList();
 
     return NodeEntrypointBuilder(compiler, dart2JsArgs: dart2JsArgs);
   }
