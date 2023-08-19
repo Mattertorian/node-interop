@@ -26,12 +26,12 @@ enum WebCompiler {
 /// The top level keys supported for the `options` config for the
 /// [NodeEntrypointBuilder].
 const _supportedOptions = [
-  _compiler,
+  _compilerOption,
   _dart2jsArgs,
   _buildRootAppSummary,
 ];
 const _buildRootAppSummary = 'build_root_app_summary';
-const _compiler = 'compiler';
+const _compilerOption = 'compiler';
 const _dart2jsArgs = 'dart2js_args';
 
 /// The deprecated keys for the `options` config for the [NodeEntrypointBuilder].
@@ -47,17 +47,27 @@ class NodeEntrypointBuilder implements Builder {
   final WebCompiler webCompiler;
   final List<String> dart2JsArgs;
 
+  /// Whether or not to enable runtime non-null assertions for values returned
+  /// from browser apis.
+  ///
+  /// If `null` then no flag will be provided to the compiler, and the default
+  /// will be used.
+  final bool? nativeNullAssertions;
+
   // TODO: Remove --no-sound-null-safety after migrating to nnbd.
-  const NodeEntrypointBuilder(this.webCompiler,
-      {this.dart2JsArgs = const ['--no-sound-null-safety']});
+  const NodeEntrypointBuilder(
+    this.webCompiler, {
+    // this.dart2JsArgs = const ['--no-sound-null-safety'],
+    this.dart2JsArgs = const [],
+    required this.nativeNullAssertions,
+  });
 
   factory NodeEntrypointBuilder.fromOptions(BuilderOptions options) {
     validateOptions(
         options.config, _supportedOptions, 'build_node_compilers|entrypoint',
         deprecatedOptions: _deprecatedOptions);
-    var compilerOption = options.config[_compiler] != null
-        ? options.config[_compiler] as String
-        : 'dartdevc';
+    var compilerOption =
+        options.config[_compilerOption] as String? ?? 'dartdevc';
     WebCompiler compiler;
     switch (compilerOption) {
       case 'dartdevc':
@@ -67,7 +77,7 @@ class NodeEntrypointBuilder implements Builder {
         compiler = WebCompiler.Dart2Js;
         break;
       default:
-        throw ArgumentError.value(compilerOption, _compiler,
+        throw ArgumentError.value(compilerOption, _compilerOption,
             'Only `dartdevc` and `dart2js` are supported.');
     }
 
@@ -75,10 +85,13 @@ class NodeEntrypointBuilder implements Builder {
       throw ArgumentError.value(options.config[_dart2jsArgs], _dart2jsArgs,
           'Expected a list for $_dart2jsArgs.');
     }
-    var dart2JsArgs =
-        (options.config[_dart2jsArgs] as List).map((arg) => '$arg').toList();
+    var dart2JsArgs = (options.config[_dart2jsArgs] as List?)
+            ?.map((arg) => '$arg')
+            .toList() ??
+        const <String>[];
 
-    return NodeEntrypointBuilder(compiler, dart2JsArgs: dart2JsArgs);
+    return NodeEntrypointBuilder(compiler,
+        dart2JsArgs: dart2JsArgs, nativeNullAssertions: true);
   }
 
   @override
@@ -116,16 +129,17 @@ Future<bool> _isAppEntryPoint(AssetId dartId, AssetReader reader) async {
   // formatting.
   // ignore: deprecated_member_use
   var parsed = parseString(
-      content: await reader.readAsString(dartId), throwIfDiagnostics: false);
+          content: await reader.readAsString(dartId), throwIfDiagnostics: false)
+      .unit;
 
   // Allow two or fewer arguments so that entrypoints intended for use with
   // [spawnUri] get counted.
   //
   // TODO: This misses the case where a Dart file doesn't contain main(),
   // but has a part that does, or it exports a `main` from another library.
-  return parsed.unit.declarations.any((node) {
+  return parsed.declarations.any((node) {
     return node is FunctionDeclaration &&
-        node.name.toString() == 'main' &&
+        node.name.lexeme == 'main' &&
         node.functionExpression.parameters?.parameters.length != null &&
         node.functionExpression.parameters!.parameters.length <= 2;
   });
