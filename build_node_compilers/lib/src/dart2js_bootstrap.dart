@@ -49,8 +49,8 @@ https://github.com/dart-lang/build/blob/master/docs/faq.md#how-can-i-resolve-ski
     var scratchSpace = await buildStep.fetchResource(scratchSpaceResource);
     var allSrcs = allDeps.expand((module) => module.sources);
     await scratchSpace.ensureAssets(allSrcs, buildStep);
-    var packageFile =
-        await _createPackageFile(allSrcs, buildStep, scratchSpace);
+    // var packageFile =
+    //     await _createPackageFile(allSrcs, buildStep, scratchSpace);
 
     var dartPath = dartEntrypointId.path.startsWith('lib/')
         ? 'package:${dartEntrypointId.package}/'
@@ -61,8 +61,8 @@ https://github.com/dart-lang/build/blob/master/docs/faq.md#how-can-i-resolve-ski
         '$jsEntrypointExtension';
     args = dart2JsArgs.toList()
       ..addAll([
-        '--packages=$packageFile',
-        '-o$jsOutputPath',
+        // '--packages=$packageFile',
+        '-o=$jsOutputPath',
         dartPath,
       ]);
   }
