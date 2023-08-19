@@ -80,7 +80,8 @@ https://github.com/dart-lang/build/blob/master/docs/faq.md#how-can-i-resolve-ski
   final result = await Process.run(
     p.join(sdkDir, 'bin', 'dart'),
     [
-      ..._dart2jsVmArgs,
+      // ..._dart2jsVmArgs,
+      'dart',
       'compile',
       'js',
       ...args,
