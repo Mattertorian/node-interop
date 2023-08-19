@@ -7,6 +7,7 @@ import 'dart:io';
 
 import 'package:build/build.dart';
 import 'package:build_modules/build_modules.dart';
+import 'package:build_node_compilers/src/common.dart';
 import 'package:crypto/crypto.dart';
 import 'package:node_preamble/preamble.dart';
 import 'package:path/path.dart' as p;
@@ -66,14 +67,31 @@ https://github.com/dart-lang/build/blob/master/docs/faq.md#how-can-i-resolve-ski
       ]);
   }
 
+  const _dart2jsVmArgsEnvVar = 'BUILD_DART2JS_VM_ARGS';
+
+  final _dart2jsVmArgs = () {
+    var env = Platform.environment[_dart2jsVmArgsEnvVar];
+    return env?.split(' ') ?? <String>[];
+  }();
+
   // final dart2js = await buildStep.fetchResource(dart2JsWorkerResource);
   // final result = await dart2js.compile(args);
+  final result = await Process.run(
+    p.join(sdkDir, 'bin', 'dart'),
+    [
+      ..._dart2jsVmArgs,
+      'compile',
+      'js',
+      ...args,
+    ],
+    workingDirectory: scratchSpace.tempDir.path,
+  );
   final jsOutputId = dartEntrypointId.changeExtension(jsEntrypointExtension);
   final jsOutputFile = scratchSpace.fileFor(jsOutputId);
   // if (result.succeeded && await jsOutputFile.exists()) {
   //   log.info(result.output);
-  if (await jsOutputFile.exists()) {
-    // log.info(result.output);
+  if (result.exitCode == 0 && await jsOutputFile.exists()) {
+    log.info('${result.stdout}\n${result.stderr}');
     addNodePreamble(jsOutputFile);
 
     await scratchSpace.copyOutput(jsOutputId, buildStep);
@@ -81,7 +99,8 @@ https://github.com/dart-lang/build/blob/master/docs/faq.md#how-can-i-resolve-ski
         dartEntrypointId.changeExtension(jsEntrypointSourceMapExtension);
     await _copyIfExists(jsSourceMapId, scratchSpace, buildStep);
   } else {
-    // log.severe(result.output);
+    log.severe('ExitCode:${result.exitCode}\nStdOut:\n${result.stdout}\n'
+        'StdErr:\n${result.stderr}');
   }
 }
 
