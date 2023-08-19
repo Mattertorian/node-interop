@@ -28,7 +28,10 @@ Future<void> bootstrapDart2Js(
             as Map<String, dynamic>);
     List<Module> allDeps;
     try {
-      allDeps = (await module.computeTransitiveDependencies(buildStep))
+      allDeps = (await module.computeTransitiveDependencies(
+        buildStep,
+        throwIfUnsupported: true,
+      ))
         ..add(module);
     } on UnsupportedModules catch (e) {
       var librariesString = (await e.exactLibraries(buildStep).toList())
@@ -46,22 +49,22 @@ https://github.com/dart-lang/build/blob/master/docs/faq.md#how-can-i-resolve-ski
       return;
     }
 
-    var scratchSpace = await buildStep.fetchResource(scratchSpaceResource);
-    var allSrcs = allDeps.expand((module) => module.sources);
+    final scratchSpace = await buildStep.fetchResource(scratchSpaceResource);
+    final allSrcs = allDeps.expand((module) => module.sources);
     await scratchSpace.ensureAssets(allSrcs, buildStep);
-    // var packageFile =
-    //     await _createPackageFile(allSrcs, buildStep, scratchSpace);
+    final packageFile =
+        await _createPackageFile(allSrcs, buildStep, scratchSpace);
 
-    var dartPath = dartEntrypointId.path.startsWith('lib/')
+    final dartPath = dartEntrypointId.path.startsWith('lib/')
         ? 'package:${dartEntrypointId.package}/'
             '${dartEntrypointId.path.substring('lib/'.length)}'
         : dartEntrypointId.path;
-    var jsOutputPath =
+    final jsOutputPath =
         '${p.withoutExtension(dartPath.replaceFirst('package:', 'packages/'))}'
         '$jsEntrypointExtension';
     args = dart2JsArgs.toList()
       ..addAll([
-        // '--packages=$packageFile',
+        '--packages=$packageFile',
         '-o=$jsOutputPath',
         dartPath,
       ]);
@@ -70,7 +73,7 @@ https://github.com/dart-lang/build/blob/master/docs/faq.md#how-can-i-resolve-ski
   const _dart2jsVmArgsEnvVar = 'BUILD_DART2JS_VM_ARGS';
 
   final _dart2jsVmArgs = () {
-    var env = Platform.environment[_dart2jsVmArgsEnvVar];
+    final env = Platform.environment[_dart2jsVmArgsEnvVar];
     return env?.split(' ') ?? <String>[];
   }();
 
