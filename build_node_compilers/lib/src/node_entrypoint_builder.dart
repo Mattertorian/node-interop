@@ -108,6 +108,7 @@ class NodeEntrypointBuilder implements Builder {
 
   @override
   Future<void> build(BuildStep buildStep) async {
+    log.info('NodeEntrypointBuilder.build with webCompiler: $webCompiler');
     var dartEntrypointId = buildStep.inputId;
     var isAppEntrypoint = await _isAppEntryPoint(dartEntrypointId, buildStep);
     if (!isAppEntrypoint) return;
