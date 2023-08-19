@@ -66,7 +66,7 @@ class NodeEntrypointBuilder implements Builder {
     log.info('NodeEntrypointBuilder.fromOptions ${options.config}');
 
     validateOptions(
-        options.config, _supportedOptions, 'build_node_compilers|entrypoint',
+        options.config, _supportedOptions, 'build_node_compilers:entrypoint',
         deprecatedOptions: _deprecatedOptions);
     var compilerOption =
         options.config[_compilerOption] as String? ?? 'dartdevc';
