@@ -92,6 +92,8 @@ class NodeEntrypointBuilder implements Builder {
             .toList() ??
         const <String>[];
 
+    log.info('returning the NodeEntrypointBuilder');
+
     return NodeEntrypointBuilder(compiler,
         dart2JsArgs: dart2JsArgs, nativeNullAssertions: true);
   }
