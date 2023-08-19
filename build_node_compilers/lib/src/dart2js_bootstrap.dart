@@ -66,12 +66,14 @@ https://github.com/dart-lang/build/blob/master/docs/faq.md#how-can-i-resolve-ski
       ]);
   }
 
-  var dart2js = await buildStep.fetchResource(dart2JsWorkerResource);
-  var result = await dart2js.compile(args);
-  var jsOutputId = dartEntrypointId.changeExtension(jsEntrypointExtension);
-  var jsOutputFile = scratchSpace.fileFor(jsOutputId);
-  if (result.succeeded && await jsOutputFile.exists()) {
-    log.info(result.output);
+  // final dart2js = await buildStep.fetchResource(dart2JsWorkerResource);
+  // final result = await dart2js.compile(args);
+  final jsOutputId = dartEntrypointId.changeExtension(jsEntrypointExtension);
+  final jsOutputFile = scratchSpace.fileFor(jsOutputId);
+  // if (result.succeeded && await jsOutputFile.exists()) {
+  //   log.info(result.output);
+  if (await jsOutputFile.exists()) {
+    // log.info(result.output);
     addNodePreamble(jsOutputFile);
 
     await scratchSpace.copyOutput(jsOutputId, buildStep);
@@ -79,7 +81,7 @@ https://github.com/dart-lang/build/blob/master/docs/faq.md#how-can-i-resolve-ski
         dartEntrypointId.changeExtension(jsEntrypointSourceMapExtension);
     await _copyIfExists(jsSourceMapId, scratchSpace, buildStep);
   } else {
-    log.severe(result.output);
+    // log.severe(result.output);
   }
 }
 

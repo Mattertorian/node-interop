@@ -73,10 +73,9 @@ class NodeEntrypointBuilder implements Builder {
       throw ArgumentError.value(options.config[_dart2jsArgs], _dart2jsArgs,
           'Expected a list for $_dart2jsArgs.');
     }
-    var dart2JsArgs = (options.config[_dart2jsArgs] as List)
-            ?.map((arg) => '$arg')
-            ?.toList() ??
-        const <String>[];
+    var dart2JsArgs =
+        (options.config[_dart2jsArgs] as List).map((arg) => '$arg').toList() ??
+            const <String>[];
 
     return NodeEntrypointBuilder(compiler, dart2JsArgs: dart2JsArgs);
   }
@@ -125,7 +124,8 @@ Future<bool> _isAppEntryPoint(AssetId dartId, AssetReader reader) async {
   // but has a part that does, or it exports a `main` from another library.
   return parsed.unit.declarations.any((node) {
     return node is FunctionDeclaration &&
-        node.name.name == 'main' &&
-        node.functionExpression.parameters.parameters.length <= 2;
+        node.name.toString() == 'main' &&
+        node.functionExpression.parameters?.parameters.length != null &&
+        node.functionExpression.parameters!.parameters.length <= 2;
   });
 }

@@ -9,7 +9,6 @@ import 'package:path/path.dart' as p;
 
 import 'build_node_compilers.dart';
 import 'src/common.dart';
-import 'src/platforms.dart';
 //import 'src/sdk_js_copy_builder.dart';
 
 // Shared entrypoint builder
@@ -76,5 +75,5 @@ bool _readUseIncrementalCompilerOption(BuilderOptions options) {
   return options.config[_useIncrementalCompilerOption] as bool ?? true;
 }
 
-Map<String, dynamic> _previousDdcConfig;
+Map<String, dynamic>? _previousDdcConfig;
 const _useIncrementalCompilerOption = 'use-incremental-compiler';
