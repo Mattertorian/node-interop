@@ -145,7 +145,7 @@ Future<String> _createPackageFile(Iterable<AssetId> inputSources,
   var packageNames = inputSources.map((s) => s.package).toSet();
   var packagesFileContent =
       packageNames.map((n) => '$n:packages/$n/').join('\n');
-  await packagesFile
-      .writeAsString('# Generated for $inputUri\n$packagesFileContent');
+  // await packagesFile
+  //     .writeAsString('# Generated for $inputUri\n$packagesFileContent');
   return packageFileName;
 }
