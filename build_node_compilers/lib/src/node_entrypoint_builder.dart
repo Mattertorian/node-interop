@@ -63,6 +63,8 @@ class NodeEntrypointBuilder implements Builder {
   });
 
   factory NodeEntrypointBuilder.fromOptions(BuilderOptions options) {
+    log.info('NodeEntrypointBuilder.fromOptions $options');
+
     validateOptions(
         options.config, _supportedOptions, 'build_node_compilers|entrypoint',
         deprecatedOptions: _deprecatedOptions);
