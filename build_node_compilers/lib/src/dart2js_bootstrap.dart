@@ -55,19 +55,42 @@ https://github.com/dart-lang/build/blob/master/docs/faq.md#how-can-i-resolve-ski
     final packageFile =
         await _createPackageFile(allSrcs, buildStep, scratchSpace);
 
-    final dartPath = dartEntrypointId.path.startsWith('lib/')
-        ? 'package:${dartEntrypointId.package}/'
-            '${dartEntrypointId.path.substring('lib/'.length)}'
-        : dartEntrypointId.path;
-    final jsOutputPath =
-        '${p.withoutExtension(dartPath.replaceFirst('package:', 'packages/'))}'
-        '$jsEntrypointExtension';
+    // final dartPath = dartEntrypointId.path.startsWith('lib/')
+    //     ? 'package:${dartEntrypointId.package}/'
+    //         '${dartEntrypointId.path.substring('lib/'.length)}'
+    //     : dartEntrypointId.path;
+
+    final dartUri = dartEntrypointId.path.startsWith('lib/')
+        ? Uri.parse('package:${dartEntrypointId.package}/'
+            '${dartEntrypointId.path.substring('lib/'.length)}')
+        : Uri.parse('$multiRootScheme:///${dartEntrypointId.path}');
+    // final jsOutputPath =
+    //     '${p.withoutExtension(dartPath.replaceFirst('package:', 'packages/'))}'
+    //     '$jsEntrypointExtension';
+    final jsOutputPath = p.withoutExtension(dartUri.scheme == 'package'
+            ? 'packages/${dartUri.path}'
+            : dartUri.path.substring(1)) +
+        jsEntrypointExtension;
     args = dart2JsArgs.toList()
       ..addAll([
-        '--packages=$packageFile',
-        '-o=$jsOutputPath',
-        dartPath,
+        // '--libraries-spec=$librariesSpec',
+        '--packages=$multiRootScheme:///.dart_tool/package_config.json',
+        '--multi-root-scheme=$multiRootScheme',
+        '--multi-root=${scratchSpace.tempDir.uri.toFilePath()}',
+        // for (var experiment in enabledExperiments)
+        //   '--enable-experiment=$experiment',
+        // if (nativeNullAssertions != null)
+        //   '--${nativeNullAssertions ? '' : 'no-'}native-null-assertions',
+        '-o$jsOutputPath',
+        '$dartUri',
       ]);
+
+    // args = dart2JsArgs.toList()
+    //   ..addAll([
+    //     '--packages=$packageFile',
+    //     '-o=$jsOutputPath',
+    //     dartPath,
+    //   ]);
   }
 
   const _dart2jsVmArgsEnvVar = 'BUILD_DART2JS_VM_ARGS';
