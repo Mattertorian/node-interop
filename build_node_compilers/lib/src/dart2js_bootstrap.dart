@@ -141,7 +141,8 @@ Future<void> _copyIfExists(
 }
 
 void addNodePreamble(File output) {
-  var preamble = getPreamble(minified: true);
+  // var preamble = getPreamble(minified: true);
+  var preamble = getPreamble(minified: false);
   var contents = output.readAsStringSync();
   output
     ..writeAsStringSync(preamble)
