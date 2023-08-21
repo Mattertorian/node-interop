@@ -59,7 +59,7 @@ class NodeEntrypointBuilder implements Builder {
     this.webCompiler, {
     // this.dart2JsArgs = const ['--no-sound-null-safety'],
     this.dart2JsArgs = const [],
-    required this.nativeNullAssertions,
+    this.nativeNullAssertions,
   });
 
   factory NodeEntrypointBuilder.fromOptions(BuilderOptions options) {

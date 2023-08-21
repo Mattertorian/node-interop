@@ -10,7 +10,7 @@ import 'package:build_test/build_test.dart';
 Future<Null> testBuilderAndCollectAssets(
     Builder builder, Map<String, dynamic> assets) async {
   var writer = InMemoryAssetWriter();
-  await testBuilder(builder, assets, writer: writer);
+  await testBuilder(builder, assets as Map<String, Object>, writer: writer);
   writer.assets.forEach((id, value) {
     assets['${id.package}|${id.path}'] = value;
   });

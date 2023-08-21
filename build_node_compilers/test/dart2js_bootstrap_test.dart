@@ -9,7 +9,7 @@ import 'package:test/test.dart';
 import 'util.dart';
 
 void main() {
-  Map<String, dynamic> assets;
+  Map<String, Object> assets = {};
   final platform = dart2jsPlatform;
 
   setUp(() async {
@@ -35,13 +35,32 @@ void main() {
   });
 
   test('can bootstrap dart entrypoints', () async {
+    // final Map<String, Object> assets = {
+    //   'b|lib/b.dart': '''final world = 'world';''',
+    //   'a|lib/a.dart': '''
+    //     import 'package:b/b.dart';
+    //     final hello = world;
+    //   ''',
+    //   'a|web/index.dart': '''
+    //     import "package:a/a.dart";
+    //     main() {
+    //       print(hello);
+    //     }
+    //   ''',
+    // };
     // Just do some basic sanity checking, integration tests will validate
     // things actually work.
     var expectedOutputs = {
       'a|web/index.dart.js': decodedMatches(contains('world')),
       'a|web/index.dart.js.map': anything,
     };
-    await testBuilder(NodeEntrypointBuilder(WebCompiler.Dart2Js), assets,
-        outputs: expectedOutputs);
+    await testBuilder(
+      NodeEntrypointBuilder(
+        WebCompiler.Dart2Js,
+        nativeNullAssertions: true,
+      ),
+      assets,
+      outputs: expectedOutputs,
+    );
   });
 }

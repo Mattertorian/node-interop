@@ -13,7 +13,7 @@ import 'package:test/test.dart';
 import 'util.dart';
 
 void main() {
-  Map<String, dynamic> assets;
+  Map<String, Object> assets = {};
 
   group('error free project', () {
     setUp(() async {
@@ -43,6 +43,21 @@ void main() {
     });
 
     test('can compile ddc modules under lib and web', () async {
+      final assets = {
+        'build_modules|lib/src/analysis_options.default.yaml': '',
+        'b|lib/b.dart': '''final world = 'world';''',
+        'a|lib/a.dart': '''
+        import 'package:b/b.dart';
+        final hello = world;
+      ''',
+        'a|web/index.dart': '''
+        import "package:a/a.dart";
+        main() {
+          print(hello);
+        }
+      ''',
+      };
+
       var expectedOutputs = {
         'b|lib/b$jsModuleExtension': decodedMatches(contains('world')),
         'b|lib/b$jsSourceMapExtension': decodedMatches(contains('b.dart')),
@@ -77,6 +92,21 @@ void main() {
       });
 
       test('reports useful messages', () async {
+        final assets = {
+          'build_modules|lib/src/analysis_options.default.yaml': '',
+          'b|lib/b.dart': '''final world = 'world';''',
+          'a|lib/a.dart': '''
+        import 'package:b/b.dart';
+        final hello = world;
+      ''',
+          'a|web/index.dart': '''
+        import "package:a/a.dart";
+        main() {
+          print(hello);
+        }
+      ''',
+        };
+
         var expectedOutputs = {
           'a|web/index$jsModuleErrorsExtension': decodedMatches(
               allOf(contains('String'), contains('assigned'), contains('int'))),

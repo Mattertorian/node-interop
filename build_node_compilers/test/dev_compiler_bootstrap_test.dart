@@ -11,7 +11,7 @@ import 'package:test/test.dart';
 import 'util.dart';
 
 void main() {
-  Map<String, dynamic> assets;
+  Map<String, Object> assets = {};
 
   setUp(() async {
     assets = {
